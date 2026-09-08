@@ -119,7 +119,6 @@ npm run preview
 ## Contact & Profiles
 
 - **Email**: [kunaldaskumar3@gmail.com](mailto:kunaldaskumar3@gmail.com)
-- **Phone**: `+91 8761941772`
 - **LinkedIn**: [linkedin.com/in/kunaldas06](https://linkedin.com/in/kunaldas06)
 - **GitHub**: [github.com/Kunal06-tech-pixel](https://github.com/Kunal06-tech-pixel)
 - **Location**: Guwahati, Assam, India
