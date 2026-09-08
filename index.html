@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      (function() {
+        var saved = localStorage.getItem('theme');
+        document.documentElement.setAttribute('data-theme', saved || 'dark');
+      })();
+    </script>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23121212'/><rect x='20' y='20' width='60' height='60' fill='none' stroke='%234ADE80' stroke-width='8'/><text x='50' y='62' font-family='monospace' font-size='38' font-weight='bold' fill='%234ADE80' text-anchor='middle'>KD</text></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kunal Kumar Das — Full-Stack Developer &amp; AI Engineer</title>
+    <meta name="description" content="Portfolio of Kunal Kumar Das, Full-Stack Developer &amp; AI Engineer. Developer of JARVIS voice assistant, ATSMind AI resume analyzer, and KeyWall security vault." />
+    <meta name="keywords" content="Kunal Kumar Das, Full-Stack Developer, AI Engineer, Whisper, Groq, Sentence Embeddings, React, Node.js, PostgreSQL, Prisma, BullMQ, Redis" />
+    <meta property="og:title" content="Kunal Kumar Das — Full-Stack Developer &amp; AI Engineer" />
+    <meta property="og:description" content="Portfolio of Kunal Kumar Das: JARVIS AI Voice Assistant, ATSMind AI Resume Platform, and KeyWall Vault." />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
