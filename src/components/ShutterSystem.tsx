@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react';
-import soundManager from '../lib/sound';
 
 interface ShutterSystemProps {
   onUnlock?: () => void;
@@ -38,9 +37,6 @@ export const ShutterSystem: React.FC<ShutterSystemProps> = ({ onUnlock }) => {
       autoOpenTimerRef.current = null;
     }
 
-    // Play the mechanical shutter lift sound (strictly guarded once)
-    soundManager.playShutterLift();
-
     setIsRevealed(true);
 
     // After physical shutter slide-up (1.4s) + finish (0.4s)
@@ -52,9 +48,6 @@ export const ShutterSystem: React.FC<ShutterSystemProps> = ({ onUnlock }) => {
   };
 
   useEffect(() => {
-    // Reset sound engine state so every fresh visit/mount can play transition audio
-    soundManager.resetShutterPlayState();
-
     // Lock body scroll while splash screen is active
     document.body.classList.add('loading');
 

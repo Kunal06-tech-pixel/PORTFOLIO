@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import soundManager from '../lib/sound';
+import React from 'react';
 
 interface TopHUDProps {
   theme: 'dark' | 'light';
@@ -16,15 +15,6 @@ export const TopHUD: React.FC<TopHUDProps> = ({
   onOpenAnalytics,
   onOpenHireModal,
 }) => {
-  const [isMuted, setIsMuted] = useState(() => soundManager.getIsMuted());
-
-  useEffect(() => {
-    return soundManager.subscribe((muted) => setIsMuted(muted));
-  }, []);
-
-  const handleToggleSound = () => {
-    soundManager.toggleMute();
-  };
   return (
     <>
       {/* Top Left Status Bar */}
@@ -51,27 +41,6 @@ export const TopHUD: React.FC<TopHUDProps> = ({
           ) : (
             <svg className="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-            </svg>
-          )}
-        </button>
-        <button
-          className={`status-sound-btn ${isMuted ? 'muted' : 'active'}`}
-          id="soundToggle"
-          onClick={handleToggleSound}
-          aria-label={isMuted ? 'Unmute transition audio' : 'Mute transition audio'}
-          title={isMuted ? 'Sound: Muted (Click to enable transition sounds)' : 'Sound: Active (Click to mute)'}
-        >
-          {isMuted ? (
-            <svg className="icon-sound" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-              <line x1="23" y1="9" x2="17" y2="15" />
-              <line x1="17" y1="9" x2="23" y2="15" />
-            </svg>
-          ) : (
-            <svg className="icon-sound" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" className="sound-wave wave-1" />
-              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" className="sound-wave wave-2" />
             </svg>
           )}
         </button>

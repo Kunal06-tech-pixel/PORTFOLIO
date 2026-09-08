@@ -12,7 +12,7 @@ A dark-mode, editorial, monospace-heavy technical portfolio designed for **Kunal
 
 ## Key Features
 
-- **Industrial Security Shutter Intro**: Authentic roll-up slat mechanism with mechanical acoustic sound design, Bebas Neue staggered typography, auto-lift sequence, and click-to-skip controls.
+- **Industrial Security Shutter Intro**: Authentic roll-up slat mechanism with Bebas Neue staggered typography, smooth auto-lift sequence, and click-to-skip controls.
 - **Generative Halftone Canvas**: Mathematical real-time fluid dot-matrix undulation on HTML5 Canvas adapting dynamically to dark/light theme tokens.
 - **Feathered Pixel Art Portrait**: Artifact-free transparent portrait cutout with vertical alpha gradient dissolve into the viewport.
 - **Featured Projects Showcase**:
@@ -35,7 +35,6 @@ A dark-mode, editorial, monospace-heavy technical portfolio designed for **Kunal
 | :--- | :--- |
 | **Frontend** | React 18, TypeScript, Vite, CSS Modules / Vanilla CSS |
 | **Animation** | Anime.js, CSS Hardware-Accelerated 3D Transforms |
-| **Sound Design** | Web Audio API, Synthesized Mechanical Roller Waveform |
 | **Typography** | Bebas Neue, Share Tech Mono, Space Mono |
 | **Data & Specs** | Fully grounded in 1-page authoritative resume |
 
@@ -46,12 +45,8 @@ A dark-mode, editorial, monospace-heavy technical portfolio designed for **Kunal
 ```
 PO/
 ├── public/
-│   ├── audio/
-│   │   └── shutter-lift.wav          # High-fidelity mechanical shutter audio
 │   ├── kunal-portrait-transparent.webp # Feathered transparent portrait
 │   └── kunal-pixel-avatar.jpg       # Profile assets
-├── scripts/
-│   └── generate_audio.cjs            # Audio synthesis & acoustic design script
 ├── src/
 │   ├── components/
 │   │   ├── AnalyticsModal.tsx        # Live traffic telemetry modal
@@ -66,15 +61,13 @@ PO/
 │   │   ├── ScheduleModal.tsx         # Call scheduling drawer
 │   │   ├── ShutterSystem.tsx         # Roll-up security shutter intro
 │   │   ├── SkillsMatrix.tsx          # 8 verified skill categories
-│   │   ├── TopHUD.tsx                # Status bar, theme & audio controls
+│   │   ├── TopHUD.tsx                # Status bar & theme controls
 │   │   └── VideoPlayer.tsx           # Interactive media preview player
 │   ├── data/
 │   │   ├── profile.ts                # Authoritative experience, education & skills
 │   │   └── projects.ts               # Authoritative project highlights
 │   ├── hooks/
 │   │   └── useLiveTraffic.ts         # Session telemetry hook
-│   ├── lib/
-│   │   └── sound.ts                  # Transition audio engine with autoplay handling
 │   ├── App.tsx                       # Root application shell
 │   ├── index.css                     # Primary design system stylesheet
 │   ├── inspo-styles.css              # Animation & component tokens
