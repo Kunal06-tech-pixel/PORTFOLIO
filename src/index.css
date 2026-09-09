@@ -876,7 +876,7 @@ main {
 .contact-cta {
   position: absolute !important;
   right: clamp(2rem, 5vw, 5rem) !important;
-  bottom: calc(clamp(7.5rem, 19.5vw * 0.76 * 1.22, 25rem) + 1.25rem) !important;
+  bottom: calc(clamp(8.6rem, 21.2vw, 30rem) + 3rem) !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: flex-end !important;
