@@ -100,7 +100,10 @@ export const SkillsMatrix: React.FC = () => {
                   <img
                     src={card.iconUrl}
                     alt={card.title}
+                    width={32}
+                    height={32}
                     loading="lazy"
+                    decoding="async"
                   />
                 </div>
                 <div className="stack-info">

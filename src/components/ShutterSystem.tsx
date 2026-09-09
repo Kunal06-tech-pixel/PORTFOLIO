@@ -48,12 +48,35 @@ export const ShutterSystem: React.FC<ShutterSystemProps> = ({ onUnlock }) => {
   };
 
   useEffect(() => {
+    // Check reduced motion preference: if active, bypass splash immediately
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      setIsRemoved(true);
+      document.body.classList.remove('loading');
+      if (onUnlock) onUnlock();
+      return;
+    }
+
     // Lock body scroll while splash screen is active
     document.body.classList.add('loading');
 
-    // Wait for Bebas Neue font to be paint-ready before triggering typewriter reveal
-    document.fonts.load('1em "Bebas Neue"').then(() => {
-      // If already opened via click/key before fonts loaded, do nothing
+    // Preload essential assets (Bebas Neue font + Hero portrait) to avoid FOUC / CLS
+    const preloadHeroImage = new Promise((resolve) => {
+      const img = new Image();
+      img.src = '/kunal-portrait-transparent.webp';
+      if (img.complete) {
+        resolve(true);
+      } else {
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+      }
+    });
+
+    const fontPromise = document.fonts ? document.fonts.load('1em "Bebas Neue"') : Promise.resolve();
+    const safetyTimeout = new Promise((resolve) => setTimeout(resolve, 1500));
+
+    Promise.race([Promise.all([fontPromise, preloadHeroImage]), safetyTimeout]).then(() => {
+      // If already opened via click/key before assets loaded, do nothing
       if (hasOpenedRef.current) return;
 
       // 1. Trigger staggered typography reveal
@@ -73,12 +96,11 @@ export const ShutterSystem: React.FC<ShutterSystemProps> = ({ onUnlock }) => {
       }, animFinishTime);
 
       // 3. Automatically lift shutter on itself after letters settle (~1.8s total from mount)
-      // Opens completely on its own without user interaction, while allowing instant click-to-open
       autoOpenTimerRef.current = window.setTimeout(() => {
         handleOpen();
       }, animFinishTime + 900);
     }).catch(() => {
-      // Fallback if font loading fails: auto-open after 1.8s
+      // Fallback if loading encounters error: auto-open after 1.8s
       autoOpenTimerRef.current = window.setTimeout(() => {
         handleOpen();
       }, 1800);

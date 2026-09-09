@@ -10,27 +10,40 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ title, type }) => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [progress, setProgress] = useState(25);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Initial stream calibration state
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 240);
+    return () => clearTimeout(timer);
+  }, []);
+
   // High-fidelity generative visual demonstration simulation
   useEffect(() => {
+    if (hasError) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {
+      setHasError(true);
+      return;
+    }
 
     let animFrame: number;
     let tick = 0;
 
     const render = () => {
-      if (isPlaying) {
-        tick += 1;
-        setProgress((prev) => (prev >= 100 ? 0 : prev + 0.15));
-      }
+      try {
+        if (isPlaying) {
+          tick += 1;
+          setProgress((prev) => (prev >= 100 ? 0 : prev + 0.15));
+        }
 
-      const w = canvas.width;
-      const h = canvas.height;
+        const w = canvas.width;
+        const h = canvas.height;
 
       // Dark background
       ctx.fillStyle = '#0a0c0b';
@@ -112,13 +125,16 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ title, type }) => {
         ctx.fillText(`[AES-GCM-256 ZERO-KNOWLEDGE] PBKDF2: 310,000 ROUNDS`, 20, 30);
         ctx.fillText(`PLAINTEXT EXPOSURE: 0 BYTES | CLOUDFLARE EDGE: BOM1`, 20, h - 25);
       }
+    } catch (e) {
+      setHasError(true);
+    }
 
       animFrame = requestAnimationFrame(render);
     };
 
     render();
     return () => cancelAnimationFrame(animFrame);
-  }, [isPlaying, type]);
+  }, [isPlaying, type, hasError]);
 
   const toggleFullscreen = () => {
     if (!containerRef.current) return;
@@ -132,16 +148,53 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ title, type }) => {
   return (
     <div className="video-player" ref={containerRef}>
       <div className="video-viewport">
-        <canvas
-          ref={canvasRef}
-          width={640}
-          height={280}
-          className="work-detail-canvas"
-        />
-        <div className="player-overlay-tag">
-          <span className="pulse-dot"></span>
-          <span>LIVE ARCHITECTURE DEMONSTRATION // {title}</span>
-        </div>
+        {hasError ? (
+          <div style={{
+            width: '100%',
+            aspectRatio: '16 / 7.5',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: '#0d0f0e',
+            color: 'var(--text-secondary)',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '12px',
+            gap: '8px'
+          }}>
+            <span>⚠ VISUALIZER STREAM OFFLINE</span>
+            <button
+              onClick={() => setHasError(false)}
+              className="btn-dark"
+              style={{ padding: '4px 10px', fontSize: '11px', cursor: 'pointer' }}
+            >
+              RETRY CONNECTION
+            </button>
+          </div>
+        ) : (
+          <>
+            <canvas
+              ref={canvasRef}
+              width={640}
+              height={280}
+              className="work-detail-canvas"
+            />
+            {isLoading && (
+              <div
+                className="skeleton-shimmer"
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  pointerEvents: 'none',
+                }}
+              />
+            )}
+            <div className="player-overlay-tag">
+              <span className="pulse-dot"></span>
+              <span>LIVE ARCHITECTURE DEMONSTRATION // {title}</span>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="video-controls">

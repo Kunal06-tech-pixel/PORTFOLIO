@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { PROFILE } from '../data/profile';
+import { useModalTransition } from '../utils/motion';
 
 interface ScheduleModalProps {
   isOpen: boolean;
@@ -7,14 +8,17 @@ interface ScheduleModalProps {
 }
 
 export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose }) => {
+  const { shouldRender, isClosing } = useModalTransition(isOpen, 220);
+
   const [topic, setTopic] = useState('Full-Time Full-Stack / AI Engineering Role');
   const [slot, setSlot] = useState('Today (16:00 - 16:30 IST / 10:30 UTC)');
   const [senderName, setSenderName] = useState('');
   const [senderEmail, setSenderEmail] = useState('');
   const [notes, setNotes] = useState('');
   const [dispatched, setDispatched] = useState(false);
+  const [errors, setErrors] = useState<{ senderName?: string; senderEmail?: string }>({});
 
-  if (!isOpen) return null;
+  if (!shouldRender) return null;
 
   const topics = [
     'Full-Time Full-Stack / AI Engineering Role',
@@ -31,10 +35,26 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose })
     'Custom Time Window (Specify in notes)'
   ];
 
+  const validateForm = () => {
+    const newErrors: { senderName?: string; senderEmail?: string } = {};
+    if (!senderName.trim()) {
+      newErrors.senderName = 'Please enter your name or organization';
+    }
+    if (!senderEmail.trim()) {
+      newErrors.senderEmail = 'Please provide a valid contact email';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(senderEmail.trim())) {
+      newErrors.senderEmail = 'Please enter a properly formatted email address';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = encodeURIComponent(`[Engineering Sync] ${topic} - ${senderName || 'Inquiry'}`);
-    const body = encodeURIComponent(`Hi Kunal,\n\nI would like to schedule a 30-min engineering call regarding: ${topic}.\n\nPreferred Slot: ${slot}\nMy Contact: ${senderEmail}\n\nAgenda / Notes:\n${notes}\n\nBest regards,\n${senderName}`);
+    if (!validateForm()) return;
+
+    const subject = encodeURIComponent(`[Engineering Sync] ${topic} - ${senderName.trim()}`);
+    const body = encodeURIComponent(`Hi Kunal,\n\nI would like to schedule a 30-min engineering call regarding: ${topic}.\n\nPreferred Slot: ${slot}\nMy Contact: ${senderEmail.trim()}\n\nAgenda / Notes:\n${notes.trim()}\n\nBest regards,\n${senderName.trim()}`);
     
     window.location.href = `mailto:${PROFILE.email}?subject=${subject}&body=${body}`;
     setDispatched(true);
@@ -45,14 +65,14 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose })
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="schedule-modal-dialog" onClick={(e) => e.stopPropagation()}>
+    <div className={`modal-overlay active ${isClosing ? 'modal-exit' : ''}`} onClick={onClose}>
+      <div className={`schedule-modal-dialog ${isClosing ? 'modal-exit' : ''}`} onClick={(e) => e.stopPropagation()}>
         <div className="modal-header-bar">
           <div className="modal-title-left">
             <span className="modal-tag">[CALENDAR]</span>
             <span className="modal-name">SCHEDULE TECHNICAL CALL // 30 MIN</span>
           </div>
-          <button onClick={onClose} className="btn-dark close-btn">
+          <button onClick={onClose} type="button" className="btn-dark close-btn">
             [ESC / CLOSE]
           </button>
         </div>
@@ -97,23 +117,31 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose })
               <label className="form-label">03 // YOUR NAME</label>
               <input
                 type="text"
-                required
                 placeholder="e.g. Sarah Jenkins (Engineering Lead)"
                 value={senderName}
-                onChange={(e) => setSenderName(e.target.value)}
-                className="form-input"
+                onChange={(e) => {
+                  setSenderName(e.target.value);
+                  if (errors.senderName) setErrors((prev) => ({ ...prev, senderName: undefined }));
+                }}
+                className={`form-input ${errors.senderName ? 'form-input-error' : ''}`}
+                aria-invalid={Boolean(errors.senderName)}
               />
+              {errors.senderName && <div className="form-error-msg">⚠ {errors.senderName}</div>}
             </div>
             <div className="form-group">
               <label className="form-label">04 // YOUR WORK EMAIL</label>
               <input
                 type="email"
-                required
                 placeholder="name@company.com"
                 value={senderEmail}
-                onChange={(e) => setSenderEmail(e.target.value)}
-                className="form-input"
+                onChange={(e) => {
+                  setSenderEmail(e.target.value);
+                  if (errors.senderEmail) setErrors((prev) => ({ ...prev, senderEmail: undefined }));
+                }}
+                className={`form-input ${errors.senderEmail ? 'form-input-error' : ''}`}
+                aria-invalid={Boolean(errors.senderEmail)}
               />
+              {errors.senderEmail && <div className="form-error-msg">⚠ {errors.senderEmail}</div>}
             </div>
           </div>
 

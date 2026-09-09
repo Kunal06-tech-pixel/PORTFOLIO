@@ -1,6 +1,7 @@
 import React from 'react';
 import { PROFILE } from '../data/profile';
 import { PROJECTS } from '../data/projects';
+import { useModalTransition } from '../utils/motion';
 
 interface ResumeModalProps {
   isOpen: boolean;
@@ -8,18 +9,20 @@ interface ResumeModalProps {
 }
 
 export const ResumeModal: React.FC<ResumeModalProps> = ({ isOpen, onClose }) => {
-  if (!isOpen) return null;
+  const { shouldRender, isClosing } = useModalTransition(isOpen, 220);
+
+  if (!shouldRender) return null;
 
   return (
     <div
       id="resumeModal"
-      className={`modal ${isOpen ? 'active' : ''}`}
+      className={`modal active ${isClosing ? 'modal-exit' : ''}`}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-label="Resume Modal"
     >
-      <div className="modal-content reveal visible" onClick={(e) => e.stopPropagation()}>
+      <div className={`modal-content ${isClosing ? 'modal-exit' : ''}`} onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <div className="terminal-dots">
             <span className="dot close" onClick={onClose} style={{ cursor: 'pointer' }}></span>

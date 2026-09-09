@@ -1,15 +1,16 @@
 import { useEffect } from 'react';
 import anime from 'animejs';
+import { EASINGS, DURATIONS } from '../utils/motion';
 
 /**
  * useScrollReveal: Cohesive, cinematic, hardware-accelerated scroll-reveal system
  * driven by IntersectionObserver and Anime.js spring / cubic-bezier curves.
  * 
  * Features:
+ * - Velocity-responsive durations: dynamically speeds up reveals during rapid scrolling
  * - Editorial Curtain reveals (masked text slide-up from overflow hidden)
  * - Hairline Line Draws (scaleX(0) -> scaleX(1))
  * - Staggered Blur-to-Focus card elevations (blur(8px) -> blur(0px))
- * - Non-blocking (fast 400ms-550ms durations)
  * - Zero layout shifts (only animates transform, opacity, & filter)
  * - Safe for reduced-motion users
  */
@@ -37,6 +38,28 @@ export const useScrollReveal = () => {
       return;
     }
 
+    // Dynamic scroll velocity tracker
+    let lastScrollY = window.scrollY;
+    let lastTime = performance.now();
+    let scrollVelocity = 0;
+
+    const handleScrollMeasure = () => {
+      const now = performance.now();
+      const dt = Math.max(1, now - lastTime);
+      const dy = Math.abs(window.scrollY - lastScrollY);
+      scrollVelocity = dy / dt;
+      lastScrollY = window.scrollY;
+      lastTime = now;
+    };
+
+    window.addEventListener('scroll', handleScrollMeasure, { passive: true });
+
+    const getScaledDuration = (baseDuration: number) => {
+      // Scale down duration up to 40% if user is flick-scrolling rapidly
+      const speedCompression = Math.max(0.6, 1 - Math.min(0.4, scrollVelocity * 0.18));
+      return Math.round(baseDuration * speedCompression);
+    };
+
     const observer = new IntersectionObserver(
       (entries, obs) => {
         entries.forEach((entry) => {
@@ -56,9 +79,9 @@ export const useScrollReveal = () => {
               targets: innerText,
               translateY: ['105%', '0%'],
               opacity: [0, 1],
-              duration: 520,
+              duration: getScaledDuration(DURATIONS.curtain),
               delay,
-              easing: 'cubicBezier(0.16, 1, 0.3, 1)',
+              easing: EASINGS.outExpo,
             });
             return;
           }
@@ -69,9 +92,9 @@ export const useScrollReveal = () => {
               targets: target,
               scaleX: [0, 1],
               opacity: [0, 1],
-              duration: 560,
+              duration: getScaledDuration(560),
               delay,
-              easing: 'easeOutExpo',
+              easing: EASINGS.outExpo,
             });
             return;
           }
@@ -85,9 +108,9 @@ export const useScrollReveal = () => {
                 opacity: [0, 1],
                 translateY: [20, 0],
                 filter: ['blur(6px)', 'blur(0px)'],
-                delay: anime.stagger(70, { start: delay }),
-                duration: 480,
-                easing: 'cubicBezier(0.16, 1, 0.3, 1)',
+                delay: anime.stagger(65, { start: delay }),
+                duration: getScaledDuration(480),
+                easing: EASINGS.outExpo,
                 complete: () => {
                   children.forEach((c) => {
                     c.style.filter = '';
@@ -105,9 +128,9 @@ export const useScrollReveal = () => {
               opacity: [0, 1],
               scale: [0.92, 1],
               translateY: [14, 0],
-              duration: 480,
+              duration: getScaledDuration(480),
               delay,
-              easing: 'spring(1, 85, 12, 0)',
+              easing: EASINGS.springSnappy,
             });
             return;
           }
@@ -117,9 +140,9 @@ export const useScrollReveal = () => {
             targets: target,
             opacity: [0, 1],
             translateY: [20, 0],
-            duration: 450,
+            duration: getScaledDuration(450),
             delay,
-            easing: 'cubicBezier(0.16, 1, 0.3, 1)',
+            easing: EASINGS.outExpo,
           });
         });
       },
@@ -136,6 +159,9 @@ export const useScrollReveal = () => {
       }
     });
 
-    return () => observer.disconnect();
+    return () => {
+      window.removeEventListener('scroll', handleScrollMeasure);
+      observer.disconnect();
+    };
   }, []);
 };

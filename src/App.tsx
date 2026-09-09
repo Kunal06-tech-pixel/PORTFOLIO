@@ -38,7 +38,8 @@ export const App: React.FC = () => {
       gestureOrientation: 'vertical',
       smoothWheel: true,
       wheelMultiplier: 0.95,
-      touchMultiplier: 1.5,
+      touchMultiplier: 1.0,
+      syncTouch: false,
     });
 
     setLenis(lenis);
@@ -57,9 +58,11 @@ export const App: React.FC = () => {
     };
   }, []);
 
-  // Pause / resume Lenis when any modal is open
+  // Pause / resume Lenis and sync body depth blur when any modal is open
   useEffect(() => {
     const anyModalOpen = isResumeOpen || isScheduleOpen || isHireOpen || isAnalyticsOpen;
+    document.body.classList.toggle('has-active-modal', anyModalOpen);
+
     const lenis = getLenis();
     if (!lenis) return;
     if (anyModalOpen) {
@@ -81,7 +84,11 @@ export const App: React.FC = () => {
   }, [theme]);
 
   const toggleTheme = () => {
+    document.documentElement.classList.add('theme-transitioning');
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+    window.setTimeout(() => {
+      document.documentElement.classList.remove('theme-transitioning');
+    }, 260);
   };
 
   // Keyboard shortcut listener (ESC closes all modals)
@@ -113,31 +120,32 @@ export const App: React.FC = () => {
         onOpenHireModal={() => setIsHireOpen(true)}
       />
 
-      {/* Split Two-Column Hero with Halftone Canvas, Feathered Portrait, Socials, Name & Bio */}
-      <Hero
-        onOpenSchedule={() => setIsScheduleOpen(true)}
-        onOpenResume={() => setIsResumeOpen(true)}
-      />
+      {/* Main Page Content Wrapper (receives backdrop depth blur when modals are active) */}
+      <div className="app-content-wrapper">
+        {/* Split Two-Column Hero with Halftone Canvas, Feathered Portrait, Socials, Name & Bio */}
+        <Hero
+          onOpenSchedule={() => setIsScheduleOpen(true)}
+          onOpenResume={() => setIsResumeOpen(true)}
+        />
 
-      <main>
+        <main>
+          {/* Featured Works Case Studies with GitHub Heatmap, Interactive Visualizer & Expandable Drawers */}
+          <Projects />
 
-        {/* Featured Works Case Studies with GitHub Heatmap, Interactive Visualizer & Expandable Drawers */}
-        <Projects />
+          {/* Work History (SynthWeb Intern) & Academic Foundation (GCU MCA/BCA) */}
+          <Experience />
 
-        {/* Work History (SynthWeb Intern) & Academic Foundation (GCU MCA/BCA) */}
-        <Experience />
+          {/* "MY STACK" 4 Alternating 2-Column Rows with Official Devicon SVGs */}
+          <SkillsMatrix />
+        </main>
 
-        {/* "MY STACK" 4 Alternating 2-Column Rows with Official Devicon SVGs */}
-        <SkillsMatrix />
-
-      </main>
-
-      {/* Closing Contact Strip with Visitor Count Badge, Giant GETINTOUCH! Watermark, & Copyright */}
-      <ContactStrip
-        onOpenSchedule={() => setIsScheduleOpen(true)}
-        onOpenResume={() => setIsResumeOpen(true)}
-        viewsCount={telemetry.totalViews}
-      />
+        {/* Closing Contact Strip with Visitor Count Badge, Giant GETINTOUCH! Watermark, & Copyright */}
+        <ContactStrip
+          onOpenSchedule={() => setIsScheduleOpen(true)}
+          onOpenResume={() => setIsResumeOpen(true)}
+          viewsCount={telemetry.totalViews}
+        />
+      </div>
 
       {/* Floating Bottom Glass Navigation Dock */}
       <BottomDock />

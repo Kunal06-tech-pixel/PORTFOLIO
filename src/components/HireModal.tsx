@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { PROFILE } from '../data/profile';
 import anime from 'animejs';
+import { useModalTransition, EASINGS } from '../utils/motion';
 
 interface HireModalProps {
   isOpen: boolean;
@@ -13,28 +14,29 @@ export const HireModal: React.FC<HireModalProps> = ({
   onClose,
   onOpenSchedule,
 }) => {
+  const { shouldRender, isClosing } = useModalTransition(isOpen, 220);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (isOpen && contentRef.current) {
+    if (isOpen && contentRef.current && !isClosing) {
       anime({
         targets: contentRef.current,
-        scale: [0.92, 1],
+        scale: [0.94, 1],
         opacity: [0, 1],
-        translateY: [20, 0],
-        duration: 350,
-        easing: 'spring(1, 80, 12, 0)',
+        translateY: [16, 0],
+        duration: 320,
+        easing: EASINGS.springSnappy,
       });
     }
-  }, [isOpen]);
+  }, [isOpen, isClosing]);
 
-  if (!isOpen) return null;
+  if (!shouldRender) return null;
 
   return (
-    <div className="hire-modal-overlay active" id="hireModal" onClick={onClose}>
+    <div className={`hire-modal-overlay active ${isClosing ? 'modal-exit' : ''}`} id="hireModal" onClick={onClose}>
       <div
         ref={contentRef}
-        className="hire-modal-content"
+        className={`hire-modal-content ${isClosing ? 'modal-exit' : ''}`}
         onClick={(e) => e.stopPropagation()}
       >
         <button className="hire-close-btn" id="closeHireModal" onClick={onClose} aria-label="Close modal">

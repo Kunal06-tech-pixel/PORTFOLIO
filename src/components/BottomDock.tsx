@@ -259,7 +259,31 @@ export const BottomDock: React.FC = () => {
     }, 1100);
   };
 
-  // 5. Tactile Hover Physics with Neighbor Attraction
+  // 5. Tactile Magnetic Hover Physics with Dynamic Cursor Attraction
+  const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>, idx: number) => {
+    const btn = itemRefs.current[idx];
+    const icon = iconRefs.current[idx];
+    if (!btn || !icon) return;
+
+    const rect = btn.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    // Calculate subtle magnetic pull vector (capped at ±6px)
+    const pullX = Math.max(-6, Math.min(6, (e.clientX - centerX) * 0.28));
+    const pullY = Math.max(-6, Math.min(6, (e.clientY - centerY) * 0.28));
+
+    anime.remove(icon);
+    anime({
+      targets: icon,
+      translateX: pullX,
+      translateY: pullY - 2,
+      scale: 1.18,
+      duration: 120,
+      easing: 'easeOutQuad',
+    });
+  };
+
   const handleMouseEnter = (idx: number) => {
     const icon = iconRefs.current[idx];
     if (icon) {
@@ -267,7 +291,7 @@ export const BottomDock: React.FC = () => {
         targets: icon,
         scale: 1.16,
         translateY: -2,
-        duration: 220,
+        duration: 200,
         easing: 'easeOutCubic',
       });
     }
@@ -289,11 +313,13 @@ export const BottomDock: React.FC = () => {
   const handleMouseLeave = (idx: number) => {
     const icon = iconRefs.current[idx];
     if (icon) {
+      anime.remove(icon);
       anime({
         targets: icon,
-        scale: 1,
+        translateX: 0,
         translateY: 0,
-        duration: 300,
+        scale: 1,
+        duration: 320,
         easing: 'spring(1, 80, 10, 0)',
       });
     }
@@ -301,6 +327,7 @@ export const BottomDock: React.FC = () => {
     [-1, 1].forEach((offset) => {
       const neighbor = iconRefs.current[idx + offset];
       if (neighbor) {
+        anime.remove(neighbor);
         anime({
           targets: neighbor,
           scale: 1,
@@ -330,6 +357,7 @@ export const BottomDock: React.FC = () => {
                 className={`dock-item ${isActive ? 'active' : ''}`}
                 onClick={(e) => handleItemClick(e, item.id, idx)}
                 onMouseEnter={() => handleMouseEnter(idx)}
+                onMouseMove={(e) => handleMouseMove(e, idx)}
                 onMouseLeave={() => handleMouseLeave(idx)}
                 aria-label={`${item.label} Section`}
                 aria-current={isActive ? 'page' : undefined}

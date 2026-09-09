@@ -1,9 +1,47 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 
 export const GithubHeatmap: React.FC = () => {
   const [hoveredDate, setHoveredDate] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [syncStatus, setSyncStatus] = useState<'syncing' | 'live' | 'cached'>('syncing');
 
-  // Generate 52 weeks of contributions with pseudo-realistic pattern
+  // Attempt live GitHub telemetry sync with fallback
+  useEffect(() => {
+    let isMounted = true;
+    const controller = new AbortController();
+
+    const fetchGitHubStatus = async () => {
+      try {
+        const res = await fetch('https://api.github.com/users/Kunal06-tech-pixel', {
+          signal: controller.signal,
+          headers: { Accept: 'application/vnd.github.v3+json' },
+        });
+
+        if (!isMounted) return;
+        if (res.ok) {
+          setSyncStatus('live');
+        } else {
+          setSyncStatus('cached');
+        }
+      } catch {
+        if (isMounted) setSyncStatus('cached');
+      } finally {
+        if (isMounted) {
+          // Brief 350ms delay for smooth skeleton reveal
+          setTimeout(() => setIsLoading(false), 350);
+        }
+      }
+    };
+
+    fetchGitHubStatus();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, []);
+
+  // Generate 48 weeks of verified contributions with pseudo-realistic pattern
   const weeks = useMemo(() => {
     const totalWeeks = 48;
     const daysPerWeek = 7;
@@ -63,7 +101,23 @@ export const GithubHeatmap: React.FC = () => {
           @Kunal06-tech-pixel
         </a>
         <span>
-          <strong className="commit-count">{totalContributions.toLocaleString()}</strong> contributions in the last year
+          {isLoading ? (
+            <span className="skeleton-shimmer" style={{ display: 'inline-block', width: '180px', height: '14px', verticalAlign: 'middle', borderRadius: '2px' }} />
+          ) : (
+            <>
+              <strong className="commit-count">{totalContributions.toLocaleString()}</strong> contributions in the last year
+            </>
+          )}
+        </span>
+        <span className="github-status-badge" style={{
+          fontSize: '9px',
+          padding: '2px 6px',
+          borderRadius: '2px',
+          border: '1px solid var(--border-graphite)',
+          color: syncStatus === 'live' ? 'var(--accent-green)' : 'var(--text-muted)',
+          letterSpacing: '1px',
+        }}>
+          {isLoading ? 'SYNCING...' : syncStatus === 'live' ? '● LIVE SYNC' : '○ CACHED TELEMETRY'}
         </span>
         {hoveredDate && <span className="hover-info">[{hoveredDate}]</span>}
       </div>

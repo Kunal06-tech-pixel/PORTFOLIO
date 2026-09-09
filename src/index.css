@@ -24,6 +24,18 @@
   --font-mono: 'Space Mono', 'Share Tech Mono', monospace;
 
   --radius-zero: 0px;
+
+  /* Consolidated Motion Tokens */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.15, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.15);
+
+  --dur-instant: 100ms;
+  --dur-fast: 160ms;
+  --dur-normal: 220ms;
+  --dur-relaxed: 380ms;
+  --dur-curtain: 520ms;
 }
 
 [data-theme="light"] {
@@ -977,14 +989,14 @@ main {
   width: 100% !important;
   text-align: center !important;
   font-family: 'Bebas Neue', sans-serif !important;
-  font-size: clamp(7.5rem, 19.5vw, 27rem) !important;
-  line-height: 0.76 !important;
+  font-size: clamp(9.5rem, 23.5vw, 33rem) !important;
+  line-height: 0.72 !important;
   letter-spacing: -0.035em !important;
   color: #555555 !important;
-  opacity: 0.88 !important;
+  opacity: 0.9 !important;
   user-select: none !important;
   pointer-events: none !important;
-  transform: scaleY(1.22) !important;
+  transform: scaleY(1.25) !important;
   transform-origin: bottom center !important;
   white-space: nowrap !important;
   z-index: 1 !important;
@@ -1042,8 +1054,8 @@ main {
   }
 
   .contact-giant {
-    font-size: clamp(4.5rem, 18vw, 9rem) !important;
-    transform: scaleY(1.1) !important;
+    font-size: clamp(5.5rem, 21vw, 12rem) !important;
+    transform: scaleY(1.2) !important;
   }
 }
 
@@ -1384,13 +1396,239 @@ html.lenis, html.lenis body {
   [data-reveal-child],
   .curtain-inner,
   [data-reveal="line"],
-  .reveal-hairline {
+  .reveal-hairline,
+  .shutter-system,
+  .splash-screen,
+  .dock-active-pill,
+  .dock-icon-wrapper {
     opacity: 1 !important;
     transform: none !important;
     filter: none !important;
     transition: none !important;
+    animation: none !important;
   }
 }
 
+/* ============================================================
+   PREMIUM UX POLISH & SYSTEM REFINEMENTS
+   ============================================================ */
 
+/* 1. Global Focus States (Styled, Accessible WCAG AA) */
+:focus-visible {
+  outline: 2px solid var(--accent-green) !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 8px var(--accent-green-dim) !important;
+}
 
+/* 2. Smooth Theme Transition */
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition: background-color var(--dur-normal) var(--ease-out-cubic),
+              border-color var(--dur-normal) var(--ease-out-cubic),
+              color var(--dur-normal) var(--ease-out-cubic),
+              fill var(--dur-normal) var(--ease-out-cubic),
+              stroke var(--dur-normal) var(--ease-out-cubic),
+              box-shadow var(--dur-normal) var(--ease-out-cubic) !important;
+}
+
+/* 3. Modal Backdrop Depth & Content Blur */
+.app-content-wrapper {
+  transition: filter var(--dur-normal) var(--ease-out-expo),
+              transform var(--dur-normal) var(--ease-out-expo),
+              opacity var(--dur-normal) var(--ease-out-expo);
+  will-change: filter, transform;
+}
+
+body.has-active-modal .app-content-wrapper {
+  filter: blur(4px) !important;
+  transform: scale(0.995) !important;
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+/* 4. Modal Entrance & Exit Animations */
+.modal,
+.modal-overlay,
+.hire-modal-overlay {
+  transition: opacity var(--dur-normal) var(--ease-out-expo),
+              backdrop-filter var(--dur-normal) var(--ease-out-expo);
+}
+
+.modal.modal-exit,
+.modal-overlay.modal-exit,
+.hire-modal-overlay.modal-exit {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.modal-content,
+.schedule-modal-dialog,
+.hire-modal-content {
+  transition: transform var(--dur-normal) var(--ease-out-expo),
+              opacity var(--dur-normal) var(--ease-out-expo),
+              box-shadow var(--dur-normal) var(--ease-out-expo);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7),
+              0 0 0 1px rgba(255, 255, 255, 0.08),
+              inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+[data-theme="light"] .modal-content,
+[data-theme="light"] .schedule-modal-dialog,
+[data-theme="light"] .hire-modal-content {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18),
+              0 0 0 1px rgba(0, 0, 0, 0.08),
+              inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+.modal-exit .modal-content,
+.modal-exit .schedule-modal-dialog,
+.modal-exit .hire-modal-content,
+.modal-content.modal-exit,
+.schedule-modal-dialog.modal-exit,
+.hire-modal-content.modal-exit {
+  transform: scale(0.96) translateY(8px) !important;
+  opacity: 0 !important;
+}
+
+/* 5. Tactile Active Press States & Transitions */
+button,
+a,
+.work-btn,
+.hire-action-icon,
+.top-hire-btn,
+.status-theme-btn,
+.status-views,
+.dock-item,
+.contact-call-link,
+.modal-download-btn,
+.modal-close,
+.hire-close-btn,
+.btn-dark {
+  transition: transform var(--dur-fast) var(--ease-out-cubic),
+              background-color var(--dur-fast) var(--ease-out-cubic),
+              border-color var(--dur-fast) var(--ease-out-cubic),
+              color var(--dur-fast) var(--ease-out-cubic),
+              box-shadow var(--dur-fast) var(--ease-out-cubic);
+}
+
+button:active,
+a:active,
+.work-btn:active,
+.hire-action-icon:active,
+.top-hire-btn:active,
+.status-theme-btn:active,
+.status-views:active,
+.dock-item:active,
+.contact-call-link:active,
+.modal-download-btn:active,
+.modal-close:active,
+.hire-close-btn:active,
+.btn-dark:active {
+  transform: scale(0.96) !important;
+}
+
+/* 6. Mobile Touch Targets (>= 44px) */
+@media (max-width: 768px), (pointer: coarse) {
+  .status-theme-btn {
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+  .status-views {
+    min-height: 44px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+  .top-hire-btn {
+    min-height: 44px !important;
+    padding: 0 1rem !important;
+  }
+  .dock-item {
+    min-width: 48px !important;
+    min-height: 48px !important;
+  }
+  .modal-close,
+  .hire-close-btn {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+}
+
+/* 7. Skeleton Shimmer & Loading States */
+@keyframes shimmer-sweep {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.12) 37%,
+    rgba(255, 255, 255, 0.04) 63%
+  ) !important;
+  background-size: 200% 100% !important;
+  animation: shimmer-sweep 1.6s infinite ease-in-out !important;
+}
+
+[data-theme="light"] .skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.04) 25%,
+    rgba(0, 0, 0, 0.1) 37%,
+    rgba(0, 0, 0, 0.04) 63%
+  ) !important;
+  background-size: 200% 100% !important;
+}
+
+/* 8. Form Validation Inline Feedback */
+.form-input-error {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 1px #ef4444 !important;
+}
+
+.form-error-msg {
+  color: #ef4444;
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* 9. Softened Card Borders & Depth */
+.work-item,
+.timeline-card,
+.skill-card,
+.analytics-card {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22),
+              0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="light"] .work-item,
+[data-theme="light"] .timeline-card,
+[data-theme="light"] .skill-card,
+[data-theme="light"] .analytics-card {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05),
+              0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+/* 10. Watermark & Hairline Intentional Scalings */
+.contact-giant {
+  user-select: none !important;
+  pointer-events: none !important;
+}
+
+.reveal-hairline {
+  transform-origin: left center !important;
+  will-change: transform, opacity !important;
+}

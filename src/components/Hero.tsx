@@ -248,6 +248,11 @@ export const Hero: React.FC<HeroProps> = ({ onOpenSchedule, onOpenResume }) => {
                 src={portraitSrc}
                 alt="Kunal Kumar Das"
                 className="hero-portrait"
+                width={420}
+                height={420}
+                fetchPriority="high"
+                decoding="async"
+                style={{ aspectRatio: '1/1', objectFit: 'contain' }}
               />
             </div>
           </div>
