@@ -66,8 +66,10 @@ export const SkillsMatrix: React.FC = () => {
 
   return (
     <section className="stack" id="skills">
-      <div className="stack-header-container">
-        <h2 className="works-header">MY STACK</h2>
+      <div className="stack-header-container" data-reveal="fade-up">
+        <div className="curtain-wrapper" data-reveal="curtain">
+          <h2 className="works-header curtain-inner">MY STACK</h2>
+        </div>
         <div className="stack-footprints" aria-hidden="true">
           <span></span>
           <span></span>
@@ -78,10 +80,20 @@ export const SkillsMatrix: React.FC = () => {
           <span></span>
         </div>
       </div>
+      <div
+        data-reveal="line"
+        className="reveal-hairline"
+        style={{
+          height: '1px',
+          background: 'var(--border-line)',
+          width: '100%',
+          margin: '0.4rem 0 1.2rem',
+        }}
+      />
 
-      <div className="stack-grid">
+      <div className="stack-grid" data-reveal="blur-focus">
         {stackRows.map((row, rIdx) => (
-          <div key={rIdx} className={`stack-row ${row.type}`}>
+          <div key={rIdx} data-reveal-child className={`stack-row ${row.type}`}>
             {row.cards.map((card, cIdx) => (
               <div key={cIdx} className="stack-card">
                 <div className="icon-wrap">

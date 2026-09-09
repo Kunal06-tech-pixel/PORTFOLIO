@@ -18,15 +18,35 @@ export const Projects: React.FC = () => {
     };
   }, [expandedId]);
 
+  const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    e.currentTarget.style.setProperty('--mouse-x', `${x}px`);
+    e.currentTarget.style.setProperty('--mouse-y', `${y}px`);
+  };
+
   return (
     <>
       <section className="works" id="projects">
-        <div className="works-hero">
-          <h2 className="works-header reveal visible">WORKS</h2>
+        <div className="works-hero" data-reveal="fade-up">
+          <div className="curtain-wrapper" data-reveal="curtain">
+            <h2 className="works-header curtain-inner">WORKS</h2>
+          </div>
+          <div
+            data-reveal="line"
+            className="reveal-hairline"
+            style={{
+              height: '1px',
+              background: 'var(--border-line)',
+              width: '100%',
+              margin: '0.8rem 0 1.4rem',
+            }}
+          />
           <GithubHeatmap />
         </div>
 
-        <div className="works-list">
+        <div className="works-list" data-reveal="blur-focus">
           {PROJECTS.map((work: ProjectCaseStudy, idx: number) => {
             const isExpanded = expandedId === work.id;
             const repoSlug = work.githubUrl.replace('https://github.com/', '');
@@ -34,9 +54,11 @@ export const Projects: React.FC = () => {
             return (
               <div
                 key={work.id}
-                className={`work-item reveal visible ${isExpanded ? 'expanded' : ''}`}
+                data-reveal-child
+                className={`work-item ${isExpanded ? 'expanded' : ''}`}
                 data-preview={idx + 1}
                 data-github-repo={repoSlug}
+                onMouseMove={handleCardMouseMove}
                 onClick={(e) => {
                   const target = e.target as HTMLElement;
                   if (

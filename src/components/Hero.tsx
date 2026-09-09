@@ -24,17 +24,74 @@ export const Hero: React.FC<HeroProps> = ({ onOpenSchedule, onOpenResume }) => {
 
   // Entrance animations via Anime.js
   useEffect(() => {
-    const heroElements = heroRef.current?.querySelectorAll('.hero-animate');
-    if (heroElements && heroElements.length > 0) {
-      anime({
-        targets: heroElements,
-        opacity: [0, 1],
-        translateY: [32, 0],
-        delay: anime.stagger(130, { start: 250 }),
-        duration: 900,
-        easing: 'easeOutCubic',
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    const tl = anime.timeline({
+      easing: 'cubicBezier(0.16, 1, 0.3, 1)',
+    });
+
+    const heroEl = heroRef.current;
+    if (!heroEl) return;
+
+    tl.add({
+      targets: heroEl.querySelectorAll('.hero-badge, .hero-tag'),
+      opacity: [0, 1],
+      translateY: [18, 0],
+      duration: 550,
+      delay: 150,
+    })
+    .add({
+      targets: heroEl.querySelectorAll('.hero-name-line, .hero-lead'),
+      opacity: [0, 1],
+      translateY: [28, 0],
+      duration: 700,
+      delay: anime.stagger(90),
+    }, '-=350')
+    .add({
+      targets: containerRef.current,
+      opacity: [0, 1],
+      scale: [0.94, 1],
+      duration: 850,
+    }, '-=550')
+    .add({
+      targets: heroEl.querySelectorAll('.hero-actions, .hero-socials, .hero-wall-name'),
+      opacity: [0, 1],
+      translateY: [16, 0],
+      duration: 600,
+      delay: anime.stagger(80),
+    }, '-=500');
+  }, []);
+
+  // Subtle GPU-accelerated scroll parallax & depth exit for hero
+  useEffect(() => {
+    let ticking = false;
+    const handleScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        if (scrollY <= window.innerHeight * 1.3 && heroRef.current) {
+          const blob = heroRef.current.querySelector<HTMLElement>('.hero-blob');
+          const portrait = containerRef.current;
+          const mainContent = heroRef.current.querySelector<HTMLElement>('.hero-main-content');
+          
+          if (blob) {
+            blob.style.transform = `translate3d(0, ${scrollY * 0.16}px, 0)`;
+          }
+          if (portrait) {
+            portrait.style.transform = `translate3d(0, ${scrollY * 0.09}px, 0)`;
+          }
+          if (mainContent) {
+            const exitProgress = Math.min(1, Math.max(0, (scrollY - 80) / (window.innerHeight * 0.75)));
+            mainContent.style.opacity = `${1 - exitProgress * 0.35}`;
+          }
+        }
+        ticking = false;
       });
-    }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Halftone canvas dot matrix background (matching inspo's fluid mathematical blob)

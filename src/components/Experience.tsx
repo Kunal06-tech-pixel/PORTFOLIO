@@ -4,19 +4,31 @@ import { PROFILE } from '../data/profile';
 export const Experience: React.FC = () => {
   return (
     <section className="experience-section" id="experience">
-      <div className="section-head-bar">
+      <div className="section-head-bar" data-reveal="fade-up">
         <div className="section-title-wrap">
           <span className="section-index">03 //</span>
-          <h2 className="section-title">EXPERIENCE &amp; EDUCATION</h2>
+          <div className="curtain-wrapper" data-reveal="curtain">
+            <h2 className="section-title curtain-inner">EXPERIENCE &amp; EDUCATION</h2>
+          </div>
         </div>
         <div className="section-annotation">
           [CAREER TIMELINE // ACADEMIC RECORD]
         </div>
       </div>
+      <div
+        data-reveal="line"
+        className="reveal-hairline"
+        style={{
+          height: '1px',
+          background: 'var(--border-line)',
+          width: '100%',
+          margin: '0.5rem 0 1.5rem',
+        }}
+      />
 
       <div className="exp-edu-grid">
         {/* Experience Column */}
-        <div className="timeline-column">
+        <div className="timeline-column" data-reveal="blur-focus">
           <div className="column-header">
             <span className="col-tag">WORK HISTORY</span>
             <span className="col-sub">[ENGINEERING ROLES]</span>
@@ -24,7 +36,7 @@ export const Experience: React.FC = () => {
 
           <div className="timeline-items">
             {PROFILE.experience.map((exp, idx) => (
-              <div key={idx} className="timeline-card">
+              <div key={idx} data-reveal-child className="timeline-card">
                 <div className="card-period-bar">
                   <span className="period-badge">{exp.period}</span>
                   <span className="type-badge">{exp.locationType}</span>
@@ -51,7 +63,7 @@ export const Experience: React.FC = () => {
         </div>
 
         {/* Education Column */}
-        <div className="timeline-column">
+        <div className="timeline-column" data-reveal="blur-focus" data-reveal-delay="80">
           <div className="column-header">
             <span className="col-tag">ACADEMIC FOUNDATION</span>
             <span className="col-sub">[DEGREE PROGRAMS]</span>
@@ -59,7 +71,7 @@ export const Experience: React.FC = () => {
 
           <div className="timeline-items">
             {PROFILE.education.map((edu, idx) => (
-              <div key={idx} className="timeline-card edu-card">
+              <div key={idx} data-reveal-child className="timeline-card edu-card">
                 <div className="card-period-bar">
                   <span className="period-badge">{edu.period}</span>
                   <span className="grade-badge">{edu.cgpa}</span>

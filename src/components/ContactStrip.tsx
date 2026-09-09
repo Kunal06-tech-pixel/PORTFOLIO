@@ -18,11 +18,13 @@ export const ContactStrip: React.FC<ContactStripProps> = ({
     <section className="contact" id="contact">
       <div className="contact-inner">
         <div className="contact-grid">
-          <div className="contact-left">
-            <h3 className="contact-heading reveal visible">
-              WHAT IF WE WORKED <strong>TOGETHER ?</strong>
-            </h3>
-            <p className="contact-paragraph reveal visible">
+          <div className="contact-left" data-reveal="fade-up">
+            <div className="curtain-wrapper" data-reveal="curtain">
+              <h3 className="contact-heading curtain-inner">
+                WHAT IF WE WORKED <strong>TOGETHER ?</strong>
+              </h3>
+            </div>
+            <p className="contact-paragraph">
               That's it, you've reached the end of my portfolio. <strong>Thanks for visiting :)</strong><br />
               If you enjoyed the journey, let's make the sequel together.<br />
               You're the <span id="contact-visitor-count">{visitorTotal}</span>
@@ -31,12 +33,13 @@ export const ContactStrip: React.FC<ContactStripProps> = ({
           </div>
 
           <div className="contact-right">
-            <div className="contact-socials reveal visible">
+            <div className="contact-socials" data-reveal="cascade">
               <a
                 href={PROFILE.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 title="LinkedIn: kunaldas06"
+                data-reveal-child
               >
                 Linkedin
               </a>
@@ -45,12 +48,14 @@ export const ContactStrip: React.FC<ContactStripProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 title="GitHub: Kunal06-tech-pixel"
+                data-reveal-child
               >
                 Github
               </a>
               <a
                 href={`tel:${PROFILE.phone.replace(/\s+/g, '')}`}
                 title={`Phone: ${PROFILE.phone}`}
+                data-reveal-child
               >
                 Phone
               </a>
@@ -58,6 +63,7 @@ export const ContactStrip: React.FC<ContactStripProps> = ({
                 onClick={onOpenResume}
                 id="contactResumeBtn"
                 type="button"
+                data-reveal-child
               >
                 Resume ↗
               </button>
@@ -65,9 +71,9 @@ export const ContactStrip: React.FC<ContactStripProps> = ({
           </div>
         </div>
 
-        <div className="contact-cta">
+        <div className="contact-cta" data-reveal="pop" data-reveal-delay="100">
           <button
-            className="contact-call-link reveal visible"
+            className="contact-call-link"
             onClick={onOpenSchedule}
             type="button"
           >
@@ -76,7 +82,7 @@ export const ContactStrip: React.FC<ContactStripProps> = ({
               ↗
             </span>
           </button>
-          <div className="contact-email-row reveal visible">
+          <div className="contact-email-row">
             <a
               href={`mailto:${PROFILE.email}`}
               className="contact-email"

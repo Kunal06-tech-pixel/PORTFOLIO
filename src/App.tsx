@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLiveTraffic } from './hooks/useLiveTraffic';
+import { useScrollReveal } from './hooks/useScrollReveal';
 import { ShutterSystem } from './components/ShutterSystem';
 import { TopHUD } from './components/TopHUD';
 import { Hero } from './components/Hero';
@@ -12,15 +13,61 @@ import { ResumeModal } from './components/ResumeModal';
 import { ScheduleModal } from './components/ScheduleModal';
 import { HireModal } from './components/HireModal';
 import { AnalyticsModal } from './components/AnalyticsModal';
+import Lenis from 'lenis';
+import { setLenis, getLenis } from './utils/lenis';
 
 export const App: React.FC = () => {
   const telemetry = useLiveTraffic();
+  useScrollReveal();
 
   // Modals state
   const [isResumeOpen, setIsResumeOpen] = useState(false);
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
   const [isHireOpen, setIsHireOpen] = useState(false);
   const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
+
+  // Initialize Lenis smooth momentum scrolling
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    const lenis = new Lenis({
+      duration: 1.15,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 0.95,
+      touchMultiplier: 1.5,
+    });
+
+    setLenis(lenis);
+
+    let rafId: number;
+    function raf(time: number) {
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
+    }
+    rafId = requestAnimationFrame(raf);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      lenis.destroy();
+      setLenis(null);
+    };
+  }, []);
+
+  // Pause / resume Lenis when any modal is open
+  useEffect(() => {
+    const anyModalOpen = isResumeOpen || isScheduleOpen || isHireOpen || isAnalyticsOpen;
+    const lenis = getLenis();
+    if (!lenis) return;
+    if (anyModalOpen) {
+      lenis.stop();
+    } else {
+      lenis.start();
+    }
+  }, [isResumeOpen, isScheduleOpen, isHireOpen, isAnalyticsOpen]);
 
   // Theme state: default dark, persisted in localStorage
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
